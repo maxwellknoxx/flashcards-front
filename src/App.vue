@@ -8,7 +8,7 @@
             <router-link to="/login">Login</router-link>
           </li>
           <li>
-            <router-link to="/dictionaries">Dictionaries</router-link>
+            <router-link :to=" '/dictionaries/' + 12">Dictionaries</router-link>
           </li>
         </ul>
       </div>

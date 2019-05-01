@@ -12,7 +12,7 @@ Vue.use(VueRouter)
 const routes = [
 
    { path: '/login', component: login },
-   { path: '/dictionaries', component: dictionaries },
+   { path: '/dictionaries/:data', component: dictionaries },
    { path: '/expressions/:data', component: expressions },
    { path: '/play/:data', component: play }
 

@@ -56,10 +56,12 @@
 
 <script>
 import Service from "../services/dictionaryExpressionService";
+import UserService from "../services/userService";
 
 export default {
   data() {
     return {
+      userId: this.$route.params.data,
       dictionaryModel: {
         id: "",
         dictionaryName: "",
@@ -71,14 +73,16 @@ export default {
   },
 
   mounted() {
-    this.findAllDictionaries();
+    console.log(this.userId)
+    this.findAllDictionaryByUserId();
   },
 
   methods: {
-    findAllDictionaries() {
-      Service.findAllDictionaries().then(response => {
+
+    findAllDictionaryByUserId() {
+      UserService.findAllDictionaryByUserId(this.userId).then(response => {
         this.dictionaries = response.data.listData;
-      });
+      })
     },
 
     addDictionary() {
