@@ -2,7 +2,7 @@
   <div id="app">
     <nav>
       <div class="nav-wrapper blue darken-1">
-        <a href="#" class="brand-logo center">Play</a>
+        <a href="#" class="brand-logo center">Playing {{ this.dictionaryModel.dictionaryName }}</a>
       </div>
     </nav>
 
@@ -59,12 +59,7 @@ export default {
 
   created() {
     this.findExpressionsByDictionaryId();
-  },
-
-  computed: {
-    expressionsLength: function() {
-      return this.expressions.length;
-    }
+    this.findDictionaryById();
   },
 
   methods: {
@@ -76,18 +71,20 @@ export default {
       );
     },
 
-    markExpressionAsHit(expressionToHit) {
-      console.log(expressionToHit);
-      Service.markExpressionAsHit(expressionToHit).then(response => {
-        window.location.reload();
+    findDictionaryById() {
+      Service.findDictionaryById(this.idDictionary).then(response => {
+        this.dictionaryModel = response.data.data;
       });
     },
 
-    markExpressionAsFail(expressionToFail) {
-      console.log(expressionToFail);
-      Service.markExpressionAsFail(expressionToFail).then(response => {
+    markExpressionAsHit(expressionToHit) {
+      Service.markExpressionAsHit(expressionToHit);
         window.location.reload();
-      });
+    },
+
+    markExpressionAsFail(expressionToFail) {
+      Service.markExpressionAsFail(expressionToFail);
+        window.location.reload();
     }
   }
 };

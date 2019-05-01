@@ -10,9 +10,6 @@
           <li>
             <router-link to="/dictionaries">Dictionaries</router-link>
           </li>
-          <li>
-            <router-link :to=" '/play/' + 1">Play</router-link>
-          </li>
         </ul>
       </div>
     </nav>
@@ -22,7 +19,7 @@
 </template>
 
 <script>
-export default {};
+
 </script>
 
 <style>

@@ -2,7 +2,9 @@
   <div id="app">
     <nav>
       <div class="nav-wrapper blue darken-1">
-        <a href="#" class="brand-logo center">{{ this.dictionaryModel.dictionaryName }}</a>
+        <router-link :to=" '/play/' + this.dictionaryModel.id  ">
+          <a href="#" class="brand-logo center"> Play {{ this.dictionaryModel.dictionaryName }}</a>
+        </router-link>
       </div>
     </nav>
 
@@ -86,10 +88,11 @@ export default {
 
   methods: {
     findExpressionsByDictionaryId() {
-      Service.findExpressionsByDictionaryId(this.idDictionary).then(response => {
-        this.expressions = response.data.listData;
-        console.log(this.expressions)
-      });
+      Service.findExpressionsByDictionaryId(this.idDictionary).then(
+        response => {
+          this.expressions = response.data.listData;
+        }
+      );
     },
 
     findDictionaryById() {
@@ -106,9 +109,6 @@ export default {
             alert(response.data.message);
             this.findExpressionsByDictionaryId();
           })
-          .catch(e => {
-            console.log(e.response);
-          });
       } else {
         Service.updateExpression(this.expressionModel).then(response => {
           this.expressionModel = {};
@@ -120,10 +120,9 @@ export default {
 
     removeExpression(expressionToRemove) {
       if (confirm("Would you like to delete this expression?")) {
-        Service.removeExpression(expressionToRemove).then(response => {
+        Service.removeExpression(expressionToRemove);
           this.expressionModel = {};
           this.findExpressionsByDictionaryId();
-        });
       }
     },
 
