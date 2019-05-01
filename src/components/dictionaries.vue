@@ -2,12 +2,11 @@
   <div id="app">
     <nav>
       <div class="nav-wrapper blue darken-1">
-        <a href="#" class="brand-logo center">Dictionary</a>
+        <a href="#" class="brand-logo center">Dictionaries</a>
       </div>
     </nav>
 
     <div class="container">
-      
       <form @submit.prevent="addDictionary">
         <label>Dictionary's name</label>
         <input type="text" required v-model="dictionaryModel.dictionaryName">
@@ -28,11 +27,13 @@
 
         <tbody>
           <tr v-for="existingDictionary in dictionaries" :key="existingDictionary.id">
-            <td> <router-link :to=" '/expressions/' + existingDictionary.id "> {{ existingDictionary.dictionaryName }} </router-link> </td>
             <td>
-              <div>
-              
-              </div>
+              <router-link
+                :to=" '/expressions/' + existingDictionary.id "
+              >{{ existingDictionary.dictionaryName }}</router-link>
+            </td>
+            <td>
+              <div></div>
               <button
                 @click="editDictionary(existingDictionary)"
                 class="waves-effect btn-small blue darken-1"
@@ -50,16 +51,10 @@
         </tbody>
       </table>
     </div>
-    
   </div>
-
-    
-
-
 </template>
 
 <script>
-
 import Service from "../services/dictionaryExpressionService";
 
 export default {
@@ -71,7 +66,7 @@ export default {
         failWords: "",
         hitWords: ""
       },
-      dictionaries: [],
+      dictionaries: []
     };
   },
 

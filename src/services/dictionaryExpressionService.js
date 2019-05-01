@@ -50,12 +50,12 @@ export default {
         return http.get('dictionary/totalHitFail')
     },
 
-    findByDictionaryId: (expressionModel) => {
-        return http.get("expression/findByDictionaryId/" + expressionModel)
+    findExpressionsByDictionaryId: (id) => {
+        return http.get('expression/findExpressionsByDictionaryId/' + id)
     },
 
     findDictionaryById: (id) => {
-        return http.get("dictionary/findDictionaryById/" + id)
+        return http.get('dictionary/findDictionaryById/' + id)
     }
     
 

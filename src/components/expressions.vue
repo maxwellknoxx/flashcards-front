@@ -80,16 +80,15 @@ export default {
   },
 
   created() {
-    this.findByDictionaryId();
+    this.findExpressionsByDictionaryId();
     this.findDictionaryById();
   },
 
   methods: {
-    findByDictionaryId() {
-      Service.findByDictionaryId(
-        this.expressionModel.dictionaryIdentityKey
-      ).then(response => {
+    findExpressionsByDictionaryId() {
+      Service.findExpressionsByDictionaryId(this.idDictionary).then(response => {
         this.expressions = response.data.listData;
+        console.log(this.expressions)
       });
     },
 
@@ -99,29 +98,23 @@ export default {
       });
     },
 
-    findAllExpressions() {
-      Service.findAllExpressions().then(response => {
-        this.expressions = response.data.listData;
-      });
-    },
-
     addExpression() {
       if (!this.expressionModel.id) {
         Service.addExpression(this.expressionModel)
           .then(response => {
             this.expressionModel = {};
             alert(response.data.message);
-            this.findAllExpressions();
+            this.findExpressionsByDictionaryId();
           })
           .catch(e => {
             console.log(e.response);
           });
       } else {
         Service.updateExpression(this.expressionModel).then(response => {
-        this.expressionModel = {};
-        alert(response.data.message);
-        this.findAllExpressions();
-        })
+          this.expressionModel = {};
+          alert(response.data.message);
+          this.findExpressionsByDictionaryId();
+        });
       }
     },
 
@@ -129,7 +122,7 @@ export default {
       if (confirm("Would you like to delete this expression?")) {
         Service.removeExpression(expressionToRemove).then(response => {
           this.expressionModel = {};
-          this.findAll();
+          this.findExpressionsByDictionaryId();
         });
       }
     },
@@ -142,7 +135,7 @@ export default {
       Service.updateExpression(expressionToUpdate).then(response => {
         this.expressionModel = {};
         alert(response.data.message);
-        this.findAll();
+        this.findExpressionsByDictionaryId();
       });
     }
   }

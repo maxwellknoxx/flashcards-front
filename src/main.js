@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import login from './components/login'
 import dictionaries from './components/dictionaries'
 import expressions from './components/expressions'
+import play from './components/play'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
@@ -12,7 +13,8 @@ const routes = [
 
    { path: '/login', component: login },
    { path: '/dictionaries', component: dictionaries },
-   { path: '/expressions/:data', component: expressions }
+   { path: '/expressions/:data', component: expressions },
+   { path: '/play/:data', component: play }
 
 ]
 
