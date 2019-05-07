@@ -73,7 +73,7 @@ export default {
         id: "",
         expression: "",
         meaning: "",
-        dictionaryIdentityKey: this.$route.params.data,
+        dictionaryIdentityKey: this.idDictionary,
         hits: "",
         fails: ""
       },
@@ -102,6 +102,7 @@ export default {
     },
 
     addExpression() {
+      this.expressionModel.dictionaryIdentityKey = this.idDictionary
       if (!this.expressionModel.id) {
         Service.addExpression(this.expressionModel)
           .then(response => {

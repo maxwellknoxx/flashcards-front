@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
+import home from './components/home'
 import login from './components/login'
+import newUser from "./components/newUser"
 import dictionaries from './components/dictionaries'
 import expressions from './components/expressions'
 import play from './components/play'
@@ -12,9 +14,11 @@ Vue.use(VueRouter)
 const routes = [
 
    { path: '/login', component: login },
+   { path: '/newUser', component: newUser },
    { path: '/dictionaries/:data', component: dictionaries },
    { path: '/expressions/:data', component: expressions },
-   { path: '/play/:data', component: play }
+   { path: '/play/:data', component: play },
+   { path: '/', component:  home}
 
 ]
 

@@ -14,6 +14,12 @@
         </button>
       </form>
     </div>
+    <div class="centerSignup">
+      <p>
+        Not a member yet?
+        <router-link to="/newUser">Sign Up</router-link>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -43,5 +49,12 @@ export default {
 </script>
 
 <style>
+
+.centerSignup {
+  margin: auto;
+  width: 50%;
+  border: 3px solid green;
+  padding: 10px;
+}
 </style>
 

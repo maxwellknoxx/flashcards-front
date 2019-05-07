@@ -6,35 +6,42 @@
       </div>
     </nav>
 
-    <table>
-      <tbody>
-        <tr v-for="existingExpression in expressions" :key="existingExpression.id">
+    <hooper style="height: 400px" :itemsToShow="1" :centerMode="true">
+      <slide v-for="existingExpression in expressions" :key="existingExpression.id">
+        <div id="card" class="VueCarousel-slide">
           <vue-flashcard :front="existingExpression.expression" :back="existingExpression.meaning"></vue-flashcard>
-          <div>
-            <button @click="markExpressionAsHit(existingExpression)" class="waves-effect btn-small blue darken-1">Hit</button> 
-            <div>
+          <div id="buttons">
+            <button
+              @click="markExpressionAsHit(existingExpression)"
+              class="waves-effect btn-small blue darken-1"
+            >Hit</button>
             {{ existingExpression.hits }}
-            </div>
-            <br/>
-            
-            <button @click="markExpressionAsFail(existingExpression)" class="waves-effect btn-small red darken-1">Fail</button>
-            <div>
-             {{ existingExpression.fails }}
-            </div>
+            <button
+              @click="markExpressionAsFail(existingExpression)"
+              class="waves-effect btn-small red darken-1"
+            >Fail</button>
+            {{ existingExpression.fails }}
           </div>
-          <hr>
-        </tr>
-      </tbody>
-    </table>
+        </div>
+      </slide>
+      <hooper-navigation slot="hooper-addons"></hooper-navigation>
+    </hooper>
   </div>
 </template>
 
 <script>
 import Service from "../services/dictionaryExpressionService";
 import vueFlashcard from "vue-flashcard";
+import { Hooper, Slide, Navigation as HooperNavigation } from "hooper";
+import "hooper/dist/hooper.css";
 
 export default {
-  components: { vueFlashcard },
+  components: {
+    vueFlashcard,
+    Hooper,
+    Slide,
+    HooperNavigation
+  },
 
   data() {
     return {
@@ -79,16 +86,31 @@ export default {
 
     markExpressionAsHit(expressionToHit) {
       Service.markExpressionAsHit(expressionToHit);
-        window.location.reload();
+      window.location.reload();
     },
 
     markExpressionAsFail(expressionToFail) {
       Service.markExpressionAsFail(expressionToFail);
-        window.location.reload();
+      window.location.reload();
     }
   }
 };
 </script>
 
 <style>
+.VueCarousel-slide {
+  position: relative;
+  background: #42b983;
+  color: #fff;
+  font-family: Arial;
+  font-size: 24px;
+  text-align: center;
+  min-height: 100px;
+}
+
+.label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
 </style>
