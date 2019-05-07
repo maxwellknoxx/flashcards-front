@@ -1,31 +1,51 @@
 <template>
-    <div id="app">
-        <div class="centerForm">
-            <form>
-                <label> User Name: </label>
-                {{  userInformation.userName }}
-                <input type="text" required v-model="userInformation.userName">
-                <label> Password: </label>
-                {{ userInformation.password }}
-                <input type="password" required v-model="userInformation.password">
-            </form>
-        </div>
+  <div id="app">
+    <div class="centerForm">
+      <form @submit.prevent="register">
+        <label>User Name:</label>
+        <input type="text" required v-model="userInformation.userName">
+        <label>Password:</label>
+        <input type="password" required v-model="userInformation.password">
+        <label>email:</label>
+        <input type="text" required v-model="userInformation.email">
+        <p>What is your favorite food?</p>
+        <label>Answer:</label>
+        <input type="text" required v-model="userInformation.answer">
+
+        <button class="waves-effect waves-light btn-small">
+          Register
+          <i class="material-icons left">check</i>
+        </button>
+      </form>
     </div>
+  </div>
 </template>
 
 <script>
-export default {
+import Service from "../services/userService";
 
-    data() {
-        return {
-            userInformation: {
-                userName: "",
-                password: ""
-            }
+export default {
+  data() {
+    return {
+      userInformation: {
+        userName: "",
+        password: "",
+        email: "",
+        answer: ""
+      }
+    };
+  },
+
+  methods: {
+    register() {
+      Service.register(this.userInformation).then(response => {
+        if (response.data.logged) {
+          this.$router.push("/dictionaries/" + response.data.data.id);
         }
+      });
     }
-    
-}
+  }
+};
 </script>
 
 <style>

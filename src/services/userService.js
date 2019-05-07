@@ -8,6 +8,14 @@ export default {
 
     findAllDictionaryByUserId: (id) => {
         return http.get('userDictionary/findAllDictionaryByUserId/' + id)
+    },
+
+    register: (userInformation) => {
+        return http.post('user/save', userInformation)
+    },
+
+    updateUser: (userInformation) => {
+        return http.post('user/update', userInformation)
     }
 
 }

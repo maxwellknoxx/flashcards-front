@@ -66,14 +66,14 @@ export default {
         id: "",
         dictionaryName: "",
         failWords: "",
-        hitWords: ""
+        hitWords: "",
+        idUser: ""
       },
       dictionaries: []
     };
   },
 
   mounted() {
-    console.log(this.userId)
     this.findAllDictionaryByUserId();
   },
 
@@ -86,6 +86,7 @@ export default {
     },
 
     addDictionary() {
+      this.dictionaryModel.idUser = this.userId;
       if (!this.dictionaryModel.id) {
         Service.addDictionary(this.dictionaryModel)
           .then(response => {
@@ -103,10 +104,9 @@ export default {
 
     removeDictionary(DictionaryToRemove) {
       if (confirm("Would you like to delete this Dictionary?")) {
-        Service.removeDictionary(DictionaryToRemove).then(response => {
+        Service.removeDictionary(DictionaryToRemove);
           this.dictionaryModel = {};
           this.findAllDictionaries();
-        });
       }
     },
 
