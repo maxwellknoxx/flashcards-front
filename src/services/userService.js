@@ -14,8 +14,16 @@ export default {
         return http.post('user/save', userInformation)
     },
 
-    updateUser: (userInformation) => {
-        return http.post('user/update', userInformation)
+    updatePassword: (userInformation) => {
+        return http.post('user/updatePassword', userInformation)
+    },
+
+    getUser: (userInformation) => {
+        return http.post('user/getUser', userInformation)
+    },
+
+    getUserByEmail: (userInformation) => {
+        return http.post('user/getUserByEmail', userInformation)
     }
 
 }

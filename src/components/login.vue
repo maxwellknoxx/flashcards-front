@@ -20,6 +20,13 @@
         <router-link to="/newUser">Sign Up</router-link>
       </p>
     </div>
+    <BR/>
+    <div class="centerForgotPassword">
+      <p>
+        Did you forget your password?
+        <router-link to="/recoverInformation">Recover information</router-link>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -39,7 +46,7 @@ export default {
   methods: {
     login() {
       Service.login(this.user).then(response => {
-        if (response.data.logged) {
+        if (response.data.status) {
           this.$router.push("/dictionaries/" + response.data.data.id);
         }
       });
@@ -53,8 +60,16 @@ export default {
 .centerSignup {
   margin: auto;
   width: 50%;
-  border: 3px solid green;
+  border: 3px solid blue;
   padding: 10px;
 }
+
+.centerForgotPassword {
+  margin: auto;
+  width: 50%;
+  border: 3px solid red;
+  padding: 10px;
+}
+
 </style>
 
