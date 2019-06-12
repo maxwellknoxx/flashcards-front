@@ -62,6 +62,15 @@ export default {
   data() {
     return {
       userId: this.$route.params.data,
+      id: "",
+      user: {
+        id: "",
+        userName: "",
+        password: "",
+        email: "",
+        answer: "",
+        isLogged: ""
+      },
       dictionaryModel: {
         id: "",
         dictionaryName: "",
@@ -73,16 +82,30 @@ export default {
     };
   },
 
+  created() {
+    this.id = localStorage.getItem('id');
+  },
+
   mounted() {
+    this.getUserById();
     this.findAllDictionaryByUserId();
   },
 
   methods: {
+    getUserById() {
+      UserService.getUserById(this.userId)
+        .then(response => {
+          this.user = response.data.data;
+        })
+        .catch(errors => {
+          router.push("/login");
+        });
+    },
 
     findAllDictionaryByUserId() {
       UserService.findAllDictionaryByUserId(this.userId).then(response => {
         this.dictionaries = response.data.listData;
-      })
+      });
     },
 
     addDictionary() {
@@ -95,7 +118,7 @@ export default {
             this.findAllDictionaries();
           })
           .catch(e => {
-            console.log(e.response);
+            
           });
       } else {
         this.updateDictionary(this.dictionaryModel);
@@ -105,8 +128,8 @@ export default {
     removeDictionary(DictionaryToRemove) {
       if (confirm("Would you like to delete this Dictionary?")) {
         Service.removeDictionary(DictionaryToRemove);
-          this.dictionaryModel = {};
-          this.findAllDictionaries();
+        this.dictionaryModel = {};
+        this.findAllDictionaries();
       }
     },
 

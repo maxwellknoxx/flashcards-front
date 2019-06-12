@@ -6,6 +6,10 @@ export default {
         return http.post('user/login', user)
     },
 
+    logout:(id) => {
+        return http.get('user/logout/' + id)
+    },
+
     findAllDictionaryByUserId: (id) => {
         return http.get('userDictionary/findAllDictionaryByUserId/' + id)
     },
@@ -20,6 +24,14 @@ export default {
 
     getUser: (userInformation) => {
         return http.post('user/getUser', userInformation)
+    },
+
+    isLogged: (id) => {
+        return http.get('user/isLogged/' + id)
+    },
+
+    getUserById: (id) => {
+        return http.get('user/getUserById/' + id)
     },
 
     getUserByEmail: (userInformation) => {

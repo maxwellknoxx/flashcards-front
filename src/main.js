@@ -3,6 +3,7 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import home from './components/home'
 import login from './components/login'
+import logout from './components/logout'
 import newUser from "./components/newUser"
 import recoverInformation from './components/recoverInformation'
 import newPassword from './components/newPassword'
@@ -15,14 +16,17 @@ Vue.use(VueRouter)
 
 const routes = [
 
+   { path: '/app', component: App },
    { path: '/login', component: login },
+   { path: '/logout', component: logout },
    { path: '/newUser', component: newUser },
    { path: '/recoverInformation', component: recoverInformation },
    { path: '/newPassword/:data', component: newPassword },
    { path: '/dictionaries/:data', component: dictionaries },
    { path: '/expressions/:data', component: expressions },
    { path: '/play/:data', component: play },
-   { path: '/', component:  home}
+   { path: '/', component:  home},
+   { path: '/home', component:  home}
 
 ]
 
