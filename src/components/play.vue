@@ -31,6 +31,7 @@
 
 <script>
 import Service from "../services/dictionaryExpressionService";
+import UserService from "../services/userService";
 import vueFlashcard from "vue-flashcard";
 import { Hooper, Slide, Navigation as HooperNavigation } from "hooper";
 import "hooper/dist/hooper.css";
@@ -65,11 +66,27 @@ export default {
   },
 
   created() {
+    this.checkLogin();
+  },
+
+  mounted() {
     this.findExpressionsByDictionaryId();
     this.findDictionaryById();
   },
 
   methods: {
+    checkLogin() {
+      UserService.isLogged(localStorage.getItem("id")).then(response => {
+        if (response.data.status) {
+          this.$store.dispatch("login");
+          this.$store.dispatch("setId", localStorage.getItem("id"));
+        } 
+      }).catch(e => {
+          localStorage.removeItem("id");
+          this.$router.push("/login");
+      });
+    },
+
     findExpressionsByDictionaryId() {
       Service.findExpressionsByDictionaryId(this.idDictionary).then(
         response => {

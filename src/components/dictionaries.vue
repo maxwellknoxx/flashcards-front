@@ -61,16 +61,6 @@ import UserService from "../services/userService";
 export default {
   data() {
     return {
-      userId: this.$route.params.data,
-      id: "",
-      user: {
-        id: "",
-        userName: "",
-        password: "",
-        email: "",
-        answer: "",
-        isLogged: ""
-      },
       dictionaryModel: {
         id: "",
         dictionaryName: "",
@@ -83,43 +73,42 @@ export default {
   },
 
   created() {
-    this.id = localStorage.getItem('id');
+    this.checkLogin();
   },
 
   mounted() {
-    this.getUserById();
-    this.findAllDictionaryByUserId();
+    this.findAllDictionaryByUserId(localStorage.getItem("id"));
   },
 
   methods: {
-    getUserById() {
-      UserService.getUserById(this.userId)
-        .then(response => {
-          this.user = response.data.data;
-        })
-        .catch(errors => {
-          router.push("/login");
-        });
+    checkLogin() {
+      UserService.isLogged(localStorage.getItem("id")).then(response => {
+        if (response.data.status) {
+          this.$store.dispatch("login");
+          this.$store.dispatch("setId", localStorage.getItem("id"));
+        }
+      }).catch(e => {
+          localStorage.removeItem("id");
+          this.$router.push("/login");
+      });
     },
 
     findAllDictionaryByUserId() {
-      UserService.findAllDictionaryByUserId(this.userId).then(response => {
+      console.log(localStorage.getItem("id"));
+      UserService.findAllDictionaryByUserId(localStorage.getItem("id")).then(response => {
         this.dictionaries = response.data.listData;
+        console.log(this.dictionaries);
       });
     },
 
     addDictionary() {
-      this.dictionaryModel.idUser = this.userId;
+      this.dictionaryModel.idUser = localStorage.getItem("id");
       if (!this.dictionaryModel.id) {
-        Service.addDictionary(this.dictionaryModel)
-          .then(response => {
-            this.dictionaryModel = {};
-            alert(response.data.message);
-            this.findAllDictionaries();
-          })
-          .catch(e => {
-            
-          });
+        Service.addDictionary(this.dictionaryModel).then(response => {
+          this.dictionaryModel = {};
+          alert(response.data.message);
+          this.findAllDictionaryByUserId();
+        });
       } else {
         this.updateDictionary(this.dictionaryModel);
       }
@@ -127,9 +116,10 @@ export default {
 
     removeDictionary(DictionaryToRemove) {
       if (confirm("Would you like to delete this Dictionary?")) {
-        Service.removeDictionary(DictionaryToRemove);
-        this.dictionaryModel = {};
-        this.findAllDictionaries();
+        Service.removeDictionary(DictionaryToRemove).then(response => {
+          alert(response.data.message);
+          this.findAllDictionaryByUserId();
+        });
       }
     },
 
@@ -141,7 +131,7 @@ export default {
       Service.updateDictionary(DictionaryToUpdate).then(response => {
         this.dictionaryModel = {};
         alert(response.data.message);
-        this.findAllDictionaries();
+        this.findAllDictionaryByUserId();
       });
     }
   }

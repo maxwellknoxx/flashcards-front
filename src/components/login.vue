@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <div class="container">
-
-      <h1> {{ message }} </h1>
+      <h1>{{ message }}</h1>
 
       <form @submit.prevent="login">
         <label>User</label>
@@ -34,11 +33,12 @@
 </template>
 
 <script>
-import Service from "../services/userService";
+import UserService from "../services/userService";
 
 export default {
   data() {
     return {
+      idUser: "",
       user: {
         userName: "",
         password: ""
@@ -49,11 +49,13 @@ export default {
 
   methods: {
     login() {
-      Service.login(this.user).then(response => {
-        console.log(response.data);
+      UserService.login(this.user).then(response => {
         if (response.data.status) {
-          localStorage.setItem('id', response.data.data.id);
-          this.$router.push("/dictionaries/" + response.data.data.id);
+          this.idUser = response.data.data.id;
+          this.$store.dispatch("login");
+          this.$store.dispatch("setId", this.idUser);
+          localStorage.setItem('id', this.idUser);
+          this.$router.push("/dictionaries/" + this.idUser);
         } else {
           this.message = response.data.message;
         }
@@ -64,7 +66,6 @@ export default {
 </script>
 
 <style>
-
 .centerSignup {
   margin: auto;
   width: 50%;
@@ -78,6 +79,5 @@ export default {
   border: 3px solid red;
   padding: 10px;
 }
-
 </style>
 

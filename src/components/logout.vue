@@ -6,27 +6,20 @@
 
 
 <script>
-import Service from "../services/userService";
+import UserService from "../services/userService";
 
 export default {
   mounted() {
     this.logout();
   },
 
-  data() {
-    return {
-      id: localStorage.getItem("id")
-    };
-  },
-
   methods: {
     logout() {
-      Service.logout(this.id).then(response => {
-        if (response.data.status) {
-          localStorage.removeItem("id");
-          this.$router.push("/home");
-        }
-      });
+      UserService.logout(localStorage.getItem('id'));
+      this.$store.dispatch("logout");
+      this.$store.dispatch("setId", "");
+      localStorage.removeItem('id');
+      this.$router.push('/');
     }
   }
 };

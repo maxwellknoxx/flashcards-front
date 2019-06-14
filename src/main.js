@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
+import store  from './store/store'
 import App from './App.vue'
 import VueRouter from 'vue-router'
 import home from './components/home'
@@ -13,6 +15,8 @@ import play from './components/play'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
+Vue.use(Vuex)
+
 
 const routes = [
 
@@ -37,5 +41,6 @@ const router = new VueRouter({
 
 new Vue({
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')

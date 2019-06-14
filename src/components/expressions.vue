@@ -3,11 +3,11 @@
     <nav>
       <div class="nav-wrapper blue darken-1">
         <router-link :to=" '/play/' + this.dictionaryModel.id  ">
-          <a href="#" class="brand-logo center"> Play {{ this.dictionaryModel.dictionaryName }}</a>
+          <a href="#" class="brand-logo center">Play {{ this.dictionaryModel.dictionaryName }}</a>
         </router-link>
       </div>
     </nav>
-
+    <BR/>
     <div class="container">
       <form @submit.prevent="addExpression">
         <label>Expression</label>
@@ -58,6 +58,7 @@
 
 <script>
 import Service from "../services/dictionaryExpressionService";
+import UserService from "../services/userService";
 
 export default {
   data() {
@@ -82,11 +83,28 @@ export default {
   },
 
   created() {
+    this.checkLogin();
+  },
+
+  mounted() {
     this.findExpressionsByDictionaryId();
     this.findDictionaryById();
   },
 
   methods: {
+    checkLogin() {
+      UserService.isLogged(localStorage.getItem("id")).then(response => {
+        if (response.data.status) {
+          console.log("logado kkk");
+          this.$store.dispatch("login");
+          this.$store.dispatch("setId", localStorage.getItem("id"));
+        }
+      }).catch(e => {
+          localStorage.removeItem("id");
+          this.$router.push("/login");
+      });
+    },
+
     findExpressionsByDictionaryId() {
       Service.findExpressionsByDictionaryId(this.idDictionary).then(
         response => {
@@ -102,14 +120,13 @@ export default {
     },
 
     addExpression() {
-      this.expressionModel.dictionaryIdentityKey = this.idDictionary
+      this.expressionModel.dictionaryIdentityKey = this.idDictionary;
       if (!this.expressionModel.id) {
-        Service.addExpression(this.expressionModel)
-          .then(response => {
-            this.expressionModel = {};
-            alert(response.data.message);
-            this.findExpressionsByDictionaryId();
-          })
+        Service.addExpression(this.expressionModel).then(response => {
+          this.expressionModel = {};
+          alert(response.data.message);
+          this.findExpressionsByDictionaryId();
+        });
       } else {
         Service.updateExpression(this.expressionModel).then(response => {
           this.expressionModel = {};
@@ -122,8 +139,8 @@ export default {
     removeExpression(expressionToRemove) {
       if (confirm("Would you like to delete this expression?")) {
         Service.removeExpression(expressionToRemove);
-          this.expressionModel = {};
-          this.findExpressionsByDictionaryId();
+        this.expressionModel = {};
+        this.findExpressionsByDictionaryId();
       }
     },
 
