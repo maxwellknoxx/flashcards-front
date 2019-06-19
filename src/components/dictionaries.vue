@@ -94,10 +94,8 @@ export default {
     },
 
     findAllDictionaryByUserId() {
-      console.log(localStorage.getItem("id"));
       UserService.findAllDictionaryByUserId(localStorage.getItem("id")).then(response => {
         this.dictionaries = response.data.listData;
-        console.log(this.dictionaries);
       });
     },
 

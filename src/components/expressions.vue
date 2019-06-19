@@ -95,7 +95,6 @@ export default {
     checkLogin() {
       UserService.isLogged(localStorage.getItem("id")).then(response => {
         if (response.data.status) {
-          console.log("logado kkk");
           this.$store.dispatch("login");
           this.$store.dispatch("setId", localStorage.getItem("id"));
         }
