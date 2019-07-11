@@ -49,6 +49,7 @@ export default {
 
   methods: {
     login() {
+      console.log(this.user);
       UserService.login(this.user).then(response => {
         if (response.data.status) {
           this.idUser = response.data.data.id;
