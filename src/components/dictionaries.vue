@@ -9,10 +9,14 @@
     <div class="container">
       <form @submit.prevent="addDictionary">
         <label>Dictionary's name</label>
-        <input type="text" required v-model="dictionaryModel.dictionaryName">
+        <input type="text" required v-model="dictionaryEntity.dictionaryName" />
 
-        <button class="waves-effect waves-light btn-small">
+        <button class="waves-effect waves-light btn-small" v-if="!isEditing">
           Add dictionary
+          <i class="material-icons left">check</i>
+        </button>
+        <button class="waves-effect waves-light btn-small" v-if="isEditing">
+          Update dictionary
           <i class="material-icons left">check</i>
         </button>
       </form>
@@ -55,20 +59,27 @@
 </template>
 
 <script>
-import Service from "../services/dictionaryExpressionService";
+import Service from "../services/dictionaryService";
 import UserService from "../services/userService";
 
 export default {
   data() {
     return {
-      dictionaryModel: {
+      dictionaryEntity: {
         id: "",
         dictionaryName: "",
         failWords: "",
         hitWords: "",
-        idUser: ""
+        user: {
+          id: localStorage.getItem("id")
+        }
       },
-      dictionaries: []
+      dictionaryModel: {
+        id: "",
+        dictionaryName: "",
+      },
+      dictionaries: [],
+      isEditing: false
     };
   },
 
@@ -82,53 +93,59 @@ export default {
 
   methods: {
     checkLogin() {
-      UserService.isLogged(localStorage.getItem("id")).then(response => {
-        if (response.data.status) {
-          this.$store.dispatch("login");
-          this.$store.dispatch("setId", localStorage.getItem("id"));
-        }
-      }).catch(e => {
+      UserService.isLogged(localStorage.getItem("id"))
+        .then(response => {
+          if (response.data) {
+            this.$store.dispatch("login");
+            this.$store.dispatch("setId", localStorage.getItem("id"));
+          }
+        })
+        .catch(e => {
           localStorage.removeItem("id");
           this.$router.push("/login");
-      });
+        });
     },
 
     findAllDictionaryByUserId() {
-      UserService.findAllDictionaryByUserId(localStorage.getItem("id")).then(response => {
-        this.dictionaries = response.data.listData;
-      });
+      Service.findAllDictionaryByUserId(localStorage.getItem("id")).then(
+        response => {
+          this.dictionaries = response.data;
+        }
+      );
     },
 
     addDictionary() {
-      this.dictionaryModel.idUser = localStorage.getItem("id");
-      if (!this.dictionaryModel.id) {
-        Service.addDictionary(this.dictionaryModel).then(response => {
-          this.dictionaryModel = {};
-          alert(response.data.message);
+      if (!this.isEditing) {
+        Service.addDictionary(this.dictionaryEntity).then(response => {
+          this.dictionaryEntity = {};
+          alert(response.data.dictionaryName);
           this.findAllDictionaryByUserId();
         });
       } else {
+        this.dictionaryModel.id = this.dictionaryEntity.id;
+        this.dictionaryModel.dictionaryName = this.dictionaryEntity.dictionaryName;
         this.updateDictionary(this.dictionaryModel);
       }
     },
 
     removeDictionary(DictionaryToRemove) {
       if (confirm("Would you like to delete this Dictionary?")) {
-        Service.removeDictionary(DictionaryToRemove).then(response => {
-          alert(response.data.message);
+        Service.removeDictionary(DictionaryToRemove.id).then(response => {
+          alert(response.data);
           this.findAllDictionaryByUserId();
         });
       }
     },
 
     editDictionary(DictionaryToEdit) {
-      this.dictionaryModel = DictionaryToEdit;
+      this.dictionaryEntity = DictionaryToEdit;
+      this.isEditing = true;
     },
 
-    updateDictionary(DictionaryToUpdate) {
-      Service.updateDictionary(DictionaryToUpdate).then(response => {
-        this.dictionaryModel = {};
-        alert(response.data.message);
+    updateDictionary(dictionaryModel) {
+      Service.updateDictionary(dictionaryModel).then(response => {
+        this.isEditing = false;
+        this.dictionaryEntity = {};
         this.findAllDictionaryByUserId();
       });
     }

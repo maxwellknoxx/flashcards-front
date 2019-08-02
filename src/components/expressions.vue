@@ -7,14 +7,14 @@
         </router-link>
       </div>
     </nav>
-    <BR/>
+    <BR />
     <div class="container">
       <form @submit.prevent="addExpression">
         <label>Expression</label>
-        <input type="text" required v-model="expressionModel.expression">
+        <input type="text" required v-model="expressionModel.expression" />
 
         <label>Meaning</label>
-        <input type="text" required v-model="expressionModel.meaning">
+        <input type="text" required v-model="expressionModel.meaning" />
 
         <button class="waves-effect waves-light btn-small">
           Add expression
@@ -57,7 +57,8 @@
 </template>
 
 <script>
-import Service from "../services/dictionaryExpressionService";
+import Service from "../services/expressionService";
+import DictionaryService from "../services/dictionaryService";
 import UserService from "../services/userService";
 
 export default {
@@ -74,7 +75,9 @@ export default {
         id: "",
         expression: "",
         meaning: "",
-        dictionaryIdentityKey: this.idDictionary,
+        dictionary: {
+          id: this.idDictionary
+        },
         hits: "",
         fails: ""
       },
@@ -87,43 +90,46 @@ export default {
   },
 
   mounted() {
+    console.log(this.idDictionary);
     this.findExpressionsByDictionaryId();
     this.findDictionaryById();
   },
 
   methods: {
     checkLogin() {
-      UserService.isLogged(localStorage.getItem("id")).then(response => {
-        if (response.data.status) {
-          this.$store.dispatch("login");
-          this.$store.dispatch("setId", localStorage.getItem("id"));
-        }
-      }).catch(e => {
+      UserService.isLogged(localStorage.getItem("id"))
+        .then(response => {
+          if (response.data) {
+            this.$store.dispatch("login");
+            this.$store.dispatch("setId", localStorage.getItem("id"));
+          }
+        })
+        .catch(e => {
           localStorage.removeItem("id");
           this.$router.push("/login");
-      });
+        });
     },
 
     findExpressionsByDictionaryId() {
       Service.findExpressionsByDictionaryId(this.idDictionary).then(
         response => {
-          this.expressions = response.data.listData;
+          this.expressions = response.data;
         }
       );
     },
 
     findDictionaryById() {
-      Service.findDictionaryById(this.idDictionary).then(response => {
-        this.dictionaryModel = response.data.data;
+      DictionaryService.findDictionaryById(this.idDictionary).then(response => {
+        this.dictionaryModel = response.data;
       });
     },
 
-    addExpression() {
-      this.expressionModel.dictionaryIdentityKey = this.idDictionary;
+    addExpression() { //here
+      console.log(JSON.stringify(this.expressionModel));
       if (!this.expressionModel.id) {
         Service.addExpression(this.expressionModel).then(response => {
           this.expressionModel = {};
-          alert(response.data.message);
+          alert(response.data);
           this.findExpressionsByDictionaryId();
         });
       } else {
@@ -137,7 +143,7 @@ export default {
 
     removeExpression(expressionToRemove) {
       if (confirm("Would you like to delete this expression?")) {
-        Service.removeExpression(expressionToRemove);
+        Service.removeExpression(expressionToRemove.id);
         this.expressionModel = {};
         this.findExpressionsByDictionaryId();
       }

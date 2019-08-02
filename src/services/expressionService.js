@@ -11,19 +11,11 @@ export default {
     },
 
     removeExpression: (expressionToRemove) => {
-        return http.delete('v1/expression/expressions', expressionToRemove)
+        return http.delete('v1/expression/expressions/' + expressionToRemove)
     },
 
     updateExpression: (expressionToUpdate) => {
         return http.put('v1/expression/expressions', expressionToUpdate)
-    },
-
-    markExpressionAsHit: (expressionToHit) => {
-        return http.post('v1/expression/hit', expressionToHit)
-    },
-
-    markExpressionAsFail: (expressionToFail) => {
-        return http.post('v1/expression/fail', expressionToFail)
     }
 
 }

@@ -31,6 +31,8 @@
 
 <script>
 import Service from "../services/dictionaryExpressionService";
+import ExpressionService from "../services/expressionService";
+import DictionaryService from "../services/dictionaryService";
 import UserService from "../services/userService";
 import vueFlashcard from "vue-flashcard";
 import { Hooper, Slide, Navigation as HooperNavigation } from "hooper";
@@ -88,7 +90,7 @@ export default {
     },
 
     findExpressionsByDictionaryId() {
-      Service.findExpressionsByDictionaryId(this.idDictionary).then(
+      ExpressionService.findExpressionsByDictionaryId(this.idDictionary).then(
         response => {
           this.expressions = response.data.listData;
         }
@@ -96,7 +98,7 @@ export default {
     },
 
     findDictionaryById() {
-      Service.findDictionaryById(this.idDictionary).then(response => {
+      DictionaryService.findDictionaryById(this.idDictionary).then(response => {
         this.dictionaryModel = response.data.data;
       });
     },

@@ -10,12 +10,12 @@ export default {
         return http.post('v1/dictionary/dictionaries', dictionaryToAdd)
     },
 
-    updateDictionary: (dictionaryToUpdate) => {
-        return http.put('v1/dictionary/dictionaries', dictionaryToUpdate)
+    updateDictionary: (dictionaryModel) => {
+        return http.put('v1/dictionary/dictionaries', dictionaryModel)
     },
 
     removeDictionary: (dictionaryToRemove) => {
-        return http.delete('v1/dictionary/dictionaries', dictionaryToRemove)
+        return http.delete('v1/dictionary/dictionaries/' + dictionaryToRemove)
     },
 
     totalHitFail: () => {

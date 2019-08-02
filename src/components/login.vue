@@ -5,10 +5,10 @@
 
       <form @submit.prevent="login">
         <label>User</label>
-        <input type="text" required v-model="user.userName">
+        <input type="text" required v-model="user.userName" />
 
         <label>Password</label>
-        <input type="password" required v-model="user.password">
+        <input type="password" required v-model="user.password" />
 
         <button class="waves-effect waves-light btn-small">
           Login
@@ -22,7 +22,7 @@
         <router-link to="/newUser">Sign Up</router-link>
       </p>
     </div>
-    <BR/>
+    <BR />
     <div class="centerForgotPassword">
       <p>
         Did you forget your password?
@@ -49,13 +49,13 @@ export default {
 
   methods: {
     login() {
-      console.log(this.user);
       UserService.login(this.user).then(response => {
-        if (response.data.status) {
-          this.idUser = response.data.data.id;
+        if (response.data.isLogged) {
+          console.log(response);
+          this.idUser = response.data.id;
           this.$store.dispatch("login");
           this.$store.dispatch("setId", this.idUser);
-          localStorage.setItem('id', this.idUser);
+          localStorage.setItem("id", this.idUser);
           this.$router.push("/dictionaries/" + this.idUser);
         } else {
           this.message = response.data.message;
