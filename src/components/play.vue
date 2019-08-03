@@ -108,18 +108,22 @@ export default {
       });
     },
 
+    setExpressions() {
+      this.expressions = this.currentExpressions;
+    },
+
     markExpressionAsHit(expressionToHit) {
       this.prepareExpression(expressionToHit);
       Service.markExpressionAsHit(this.expressionModel).then(response => {
         alert(response.data);
-      })
+      });
     },
 
     markExpressionAsFail(expressionToFail) {
       this.prepareExpression(expressionToFail);
       Service.markExpressionAsFail(this.expressionModel).then(response => {
-         alert(response.data);
-      })
+        alert(response.data);
+      });
     },
 
     prepareExpression(expressionToPrepare) {

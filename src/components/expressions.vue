@@ -135,11 +135,13 @@ export default {
       if (!this.expressionModel.id) {
         Service.addExpression(this.expressionModel).then(response => {
           this.expressionModel = {};
+          alert("Expression " + this.expressionModel.expression + " has been added");
           this.findExpressionsByDictionaryId();
         });
       } else {
         Service.updateExpression(this.expressionModel).then(response => {
           this.expressionModel = {};
+          alert("Expression " + this.expressionModel.expression + " has been updated");
           this.findExpressionsByDictionaryId();
         });
       }
@@ -164,14 +166,6 @@ export default {
       this.expressionModel.hits = expressionToEdit.hits;
       this.expressionModel.fails = expressionToEdit.fails;
       this.isEditing = true;
-    },
-
-    updateExpression(expressionToUpdate) {
-      Service.updateExpression(expressionToUpdate).then(response => {
-        this.expressionModel = {};
-        alert(response.data.message);
-        this.findExpressionsByDictionaryId();
-      });
     }
   }
 };

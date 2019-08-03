@@ -76,7 +76,7 @@ export default {
       },
       dictionaryModel: {
         id: "",
-        dictionaryName: "",
+        dictionaryName: ""
       },
       dictionaries: [],
       isEditing: false
@@ -119,7 +119,7 @@ export default {
       if (!this.isEditing) {
         Service.addDictionary(this.dictionaryEntity).then(response => {
           this.dictionaryEntity = {};
-          alert(response.data.dictionaryName);
+          alert("Dictionary " + response.data.dictionaryName + " has been added");
           this.findAllDictionaryByUserId();
         });
       } else {
@@ -145,9 +145,14 @@ export default {
 
     updateDictionary(dictionaryModel) {
       Service.updateDictionary(dictionaryModel).then(response => {
-        this.isEditing = false;
-        this.dictionaryEntity = {};
-        this.findAllDictionaryByUserId();
+        if (response.data) {
+          this.isEditing = false;
+          this.dictionaryEntity = {};
+          alert("Dictionary has been updated!");
+          this.findAllDictionaryByUserId();
+        } else {
+          alert("Please, try it again");
+        }
       });
     }
   }

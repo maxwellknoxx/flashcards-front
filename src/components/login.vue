@@ -5,7 +5,7 @@
 
       <form @submit.prevent="login">
         <label>User</label>
-        <input type="text" required v-model="user.userName" />
+        <input type="text" required v-model="user.userName" @click="cleanMessage()" />
 
         <label>Password</label>
         <input type="password" required v-model="user.password" />
@@ -57,9 +57,14 @@ export default {
           localStorage.setItem("id", this.idUser);
           this.$router.push("/dictionaries/" + this.idUser);
         } else {
-          this.message = response.data.message;
+          this.message = response.data;
+          this.user = "";
         }
       });
+    },
+
+    cleanMessage() {
+      this.message = "";
     }
   }
 };
