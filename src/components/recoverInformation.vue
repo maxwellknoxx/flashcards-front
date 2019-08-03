@@ -4,9 +4,16 @@
       <form @submit.prevent="checkInformation">
         <label>Email</label>
         <input type="text" required v-model="user.email">
+
+        <label>Username</label>
+        <input type="text" required v-model="user.userName">
+
         <p>What is your favorite food?</p>
         <label>Answer:</label>
         <input type="text" required v-model="user.answer">
+
+        <label>new password</label>
+        <input type="password" required v-model="user.password">
 
         <div>
         <button class="waves-effect waves-light btn-small">
@@ -37,9 +44,12 @@ export default {
 
 methods: {
     checkInformation() {
-        Service.getUserByEmail(this.user).then(response => {
-            if(response.data.status) {
-                this.$router.push("/newPassword/" + response.data.data.id);
+        Service.validations(this.user).then(response => {
+            if(response.data == true) {
+               alert("Success");
+               this.$router.push("/login");
+            } else {
+              alert(response.data);
             }
         }) 
     }

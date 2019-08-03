@@ -6,7 +6,7 @@
       </div>
     </nav>
 
-    <hooper style="height: 400px" :itemsToShow="1" :centerMode="true">
+    <hooper style="height: 400px" :itemsToShow="1" :centerMode="true" :infiniteScroll="true">
       <slide v-for="existingExpression in expressions" :key="existingExpression.id">
         <div id="card" class="VueCarousel-slide">
           <vue-flashcard :front="existingExpression.expression" :back="existingExpression.meaning"></vue-flashcard>
@@ -59,7 +59,9 @@ export default {
         id: "",
         expression: "",
         meaning: "",
-        dictionaryIdentityKey: "",
+        dictionary: {
+          id: this.$route.params.data
+        },
         hits: "",
         fails: ""
       },
@@ -72,45 +74,63 @@ export default {
   },
 
   mounted() {
-    this.findExpressionsByDictionaryId();
     this.findDictionaryById();
+    this.findExpressionsByDictionaryId();
   },
 
   methods: {
     checkLogin() {
-      UserService.isLogged(localStorage.getItem("id")).then(response => {
-        if (response.data.status) {
-          this.$store.dispatch("login");
-          this.$store.dispatch("setId", localStorage.getItem("id"));
-        } 
-      }).catch(e => {
+      UserService.isLogged(localStorage.getItem("id"))
+        .then(response => {
+          if (response.data.status) {
+            this.$store.dispatch("login");
+            this.$store.dispatch("setId", localStorage.getItem("id"));
+          }
+        })
+        .catch(e => {
           localStorage.removeItem("id");
+          localStorage.removeItem("dictionaryId");
           this.$router.push("/login");
-      });
+        });
     },
 
     findExpressionsByDictionaryId() {
       ExpressionService.findExpressionsByDictionaryId(this.idDictionary).then(
         response => {
-          this.expressions = response.data.listData;
+          this.expressions = response.data;
         }
       );
     },
 
     findDictionaryById() {
       DictionaryService.findDictionaryById(this.idDictionary).then(response => {
-        this.dictionaryModel = response.data.data;
+        this.dictionaryModel = response.data;
       });
     },
 
     markExpressionAsHit(expressionToHit) {
-      Service.markExpressionAsHit(expressionToHit);
-      window.location.reload();
+      this.prepareExpression(expressionToHit);
+      Service.markExpressionAsHit(this.expressionModel).then(response => {
+        alert(response.data);
+      })
     },
 
     markExpressionAsFail(expressionToFail) {
-      Service.markExpressionAsFail(expressionToFail);
-      window.location.reload();
+      this.prepareExpression(expressionToFail);
+      Service.markExpressionAsFail(this.expressionModel).then(response => {
+         alert(response.data);
+      })
+    },
+
+    prepareExpression(expressionToPrepare) {
+      this.expressionModel.id = expressionToPrepare.id;
+      this.expressionModel.expression = expressionToPrepare.expression;
+      this.expressionModel.meaning = expressionToPrepare.meaning;
+      this.expressionModel.dictionary = {
+        id: expressionToPrepare.dictionaryId
+      };
+      this.expressionModel.hits = expressionToPrepare.hits;
+      this.expressionModel.fails = expressionToPrepare.fails;
     }
   }
 };

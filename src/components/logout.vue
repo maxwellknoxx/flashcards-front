@@ -19,6 +19,7 @@ export default {
       this.$store.dispatch("logout");
       this.$store.dispatch("setId", "");
       localStorage.removeItem('id');
+      localStorage.removeItem('dictionaryId');
       this.$router.push('/');
     }
   }

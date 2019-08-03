@@ -2,7 +2,7 @@
   <div id="app">
     <nav>
       <div class="nav-wrapper blue darken-1">
-        <router-link :to=" '/play/' + this.dictionaryModel.id  ">
+        <router-link :to=" '/play/' + this.idDictionary  ">
           <a href="#" class="brand-logo center">Play {{ this.dictionaryModel.dictionaryName }}</a>
         </router-link>
       </div>
@@ -16,8 +16,12 @@
         <label>Meaning</label>
         <input type="text" required v-model="expressionModel.meaning" />
 
-        <button class="waves-effect waves-light btn-small">
+        <button class="waves-effect waves-light btn-small" v-if="!isEditing">
           Add expression
+          <i class="material-icons left">check</i>
+        </button>
+        <button class="waves-effect waves-light btn-small" v-if="isEditing">
+          Update expression
           <i class="material-icons left">check</i>
         </button>
       </form>
@@ -76,12 +80,13 @@ export default {
         expression: "",
         meaning: "",
         dictionary: {
-          id: this.idDictionary
+          id: this.$route.params.data
         },
         hits: "",
         fails: ""
       },
-      expressions: []
+      expressions: [],
+      isEditing: false
     };
   },
 
@@ -90,12 +95,13 @@ export default {
   },
 
   mounted() {
-    console.log(this.idDictionary);
+    localStorage.setItem("dictionaryId", this.idDictionary);
     this.findExpressionsByDictionaryId();
     this.findDictionaryById();
   },
 
   methods: {
+
     checkLogin() {
       UserService.isLogged(localStorage.getItem("id"))
         .then(response => {
@@ -106,12 +112,13 @@ export default {
         })
         .catch(e => {
           localStorage.removeItem("id");
+          localStorage.removeItem("dictionaryId");
           this.$router.push("/login");
         });
     },
 
     findExpressionsByDictionaryId() {
-      Service.findExpressionsByDictionaryId(this.idDictionary).then(
+      Service.findExpressionsByDictionaryId(localStorage.getItem("dictionaryId")).then(
         response => {
           this.expressions = response.data;
         }
@@ -119,23 +126,20 @@ export default {
     },
 
     findDictionaryById() {
-      DictionaryService.findDictionaryById(this.idDictionary).then(response => {
+      DictionaryService.findDictionaryById(localStorage.getItem("dictionaryId")).then(response => {
         this.dictionaryModel = response.data;
       });
     },
 
-    addExpression() { //here
-      console.log(JSON.stringify(this.expressionModel));
+    addExpression() {
       if (!this.expressionModel.id) {
         Service.addExpression(this.expressionModel).then(response => {
           this.expressionModel = {};
-          alert(response.data);
           this.findExpressionsByDictionaryId();
         });
       } else {
         Service.updateExpression(this.expressionModel).then(response => {
           this.expressionModel = {};
-          alert(response.data.message);
           this.findExpressionsByDictionaryId();
         });
       }
@@ -143,14 +147,23 @@ export default {
 
     removeExpression(expressionToRemove) {
       if (confirm("Would you like to delete this expression?")) {
-        Service.removeExpression(expressionToRemove.id);
-        this.expressionModel = {};
-        this.findExpressionsByDictionaryId();
+        Service.removeExpression(expressionToRemove.id).then(response => {
+           alert(response.data);
+            this.findExpressionsByDictionaryId();
+        })
       }
     },
 
     editExpression(expressionToEdit) {
-      this.expressionModel = expressionToEdit;
+      this.expressionModel.id = expressionToEdit.id;
+      this.expressionModel.expression = expressionToEdit.expression;
+      this.expressionModel.meaning = expressionToEdit.meaning;
+      this.expressionModel.dictionary = {
+        id: expressionToEdit.dictionaryId
+      };
+      this.expressionModel.hits = expressionToEdit.hits;
+      this.expressionModel.fails = expressionToEdit.fails;
+      this.isEditing = true;
     },
 
     updateExpression(expressionToUpdate) {

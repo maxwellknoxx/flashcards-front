@@ -51,7 +51,6 @@ export default {
     login() {
       UserService.login(this.user).then(response => {
         if (response.data.isLogged) {
-          console.log(response);
           this.idUser = response.data.id;
           this.$store.dispatch("login");
           this.$store.dispatch("setId", this.idUser);

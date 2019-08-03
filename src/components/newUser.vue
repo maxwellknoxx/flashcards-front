@@ -44,7 +44,8 @@ export default {
         userName: "",
         password: "",
         email: "",
-        answer: ""
+        answer: "",
+        isLogged: false
       },
       message: ""
     };
@@ -53,8 +54,8 @@ export default {
   methods: {
     register() {
       Service.register(this.userInformation).then(response => {
-        if (response.data.status) {
-          this.idUser = response.data.data.id;
+        if (response.data.isLogged) {
+          this.idUser = response.data.id;
           localStorage.setItem("id", this.idUser);
           this.$store.dispatch("login");
           this.$store.dispatch("setId", this.idUser);

@@ -102,6 +102,7 @@ export default {
         })
         .catch(e => {
           localStorage.removeItem("id");
+          localStorage.removeItem("dictionaryId");
           this.$router.push("/login");
         });
     },

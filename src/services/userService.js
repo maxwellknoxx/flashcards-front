@@ -30,8 +30,8 @@ export default {
         return http.get('v1/user/users/' + id)
     },
 
-    getUserByEmail: (userInformation) => {
-        return http.post('v1/user/getUserByEmail', userInformation)
+    validations: (userInformation) => {
+        return http.post('v1/user/validations', userInformation)
     }
 
 }
