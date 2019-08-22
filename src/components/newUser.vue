@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="centerForm">
-      <br>
+      <br />
       {{ message }}
       <form @submit.prevent="register">
         <label>User Name:</label>
@@ -11,18 +11,20 @@
           v-model="userInformation.userName"
           @blur="validateUserField()"
           @click="cleanMessage()"
-        >
+        />
         <label>Password:</label>
-        <input
-          type="password"
-          required
-          v-model="userInformation.password">
+        <input type="password" required v-model="userInformation.password" />
         <label>E-mail:</label>
-        <input type="email" required v-model="userInformation.email" @blur="validateEmail()"
-          @click="cleanMessage()">
+        <input
+          type="email"
+          required
+          v-model="userInformation.email"
+          @blur="validateEmail()"
+          @click="cleanMessage()"
+        />
         <p>What is your favorite food?</p>
         <label>Answer:</label>
-        <input type="text" required v-model="userInformation.answer">
+        <input type="text" required v-model="userInformation.answer" />
 
         <button class="waves-effect waves-light btn-small">
           Register
@@ -54,15 +56,15 @@ export default {
   methods: {
     register() {
       Service.register(this.userInformation).then(response => {
-        if (response.data.isLogged) {
-          this.idUser = response.data.id;
-          localStorage.setItem("id", this.idUser);
-          this.$store.dispatch("login");
-          this.$store.dispatch("setId", this.idUser);
-          localStorage.setItem("id", this.idUser);
-          this.$router.push("/dictionaries/" + this.idUser);
-        }
+        this.validateLogin(response);
       });
+    },
+
+    validateLogin(response) {
+      if (response.data === true) {
+        this.showMessage("You have been registered, please, log in!");
+        this.$router.push("/login");
+      }
     },
 
     showMessage(messageToShow) {
@@ -83,7 +85,7 @@ export default {
     validateEmail() {
       if (
         !this.userInformation.email.match(
-          "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+          "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$"
         )
       ) {
         this.showMessage("Please, insert a valide E-mail");

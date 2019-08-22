@@ -96,63 +96,117 @@ export default {
 
   mounted() {
     localStorage.setItem("dictionaryId", this.idDictionary);
-    this.findExpressionsByDictionaryId();
     this.findDictionaryById();
+    this.findExpressionsByDictionaryId();
   },
 
   methods: {
-
     checkLogin() {
-      UserService.isLogged(localStorage.getItem("id"))
-        .then(response => {
-          if (response.data) {
-            this.$store.dispatch("login");
-            this.$store.dispatch("setId", localStorage.getItem("id"));
-          }
-        })
-        .catch(e => {
-          localStorage.removeItem("id");
-          localStorage.removeItem("dictionaryId");
-          this.$router.push("/login");
-        });
+      if (this.checkLocalStorage() === true) {
+        UserService.isLogged(localStorage.getItem("id"))
+          .then(response => {
+            this.validateCheckedLogin(response);
+          })
+          .catch(e => {
+            this.removeLocalStorage();
+          });
+      }
+    },
+
+    validateCheckedLogin(response) {
+      if (response.data === true) {
+        this.setLocalStorage();
+      } else {
+        this.removeLocalStorage();
+      }
+    },
+
+    setLocalStorage() {
+      this.$store.dispatch("login");
+      this.$store.dispatch("setId", this.getLocalStorageId());
+    },
+
+    removeLocalStorage() {
+      localStorage.removeItem("id");
+      localStorage.removeItem("dictionaryId");
+      this.$router.push("/login");
+    },
+
+    checkLocalStorage() {
+      if (this.getLocalStorageId()) {
+        return true;
+      }
+      return false;
+    },
+
+    getLocalStorageId() {
+      return localStorage.getItem("id");
+    },
+
+    getLocalStorageDictionaryId() {
+      return localStorage.getItem("dictionaryId");
     },
 
     findExpressionsByDictionaryId() {
-      Service.findExpressionsByDictionaryId(localStorage.getItem("dictionaryId")).then(
-        response => {
+      Service.findExpressionsByDictionaryId(
+        this.getLocalStorageDictionaryId()
+      ).then(response => {
+        if (response.data !== false) {
           this.expressions = response.data;
         }
-      );
+      });
     },
 
     findDictionaryById() {
-      DictionaryService.findDictionaryById(localStorage.getItem("dictionaryId")).then(response => {
-        this.dictionaryModel = response.data;
+      DictionaryService.findDictionaryById(
+        this.getLocalStorageDictionaryId()
+      ).then(response => {
+        if (response.data !== false) {
+          this.dictionaryModel = response.data;
+        }
       });
     },
 
     addExpression() {
-      if (!this.expressionModel.id) {
+      if (this.isEditing !== true) {
+        this.expressionModel.dictionary.id = this.getLocalStorageDictionaryId();
         Service.addExpression(this.expressionModel).then(response => {
-          this.expressionModel = {};
-          alert("Expression " + this.expressionModel.expression + " has been added");
+          this.showAlert(
+            "Expression " + this.expressionModel.expression + " has been added"
+          );
+          this.cleanFields();
           this.findExpressionsByDictionaryId();
         });
       } else {
-        Service.updateExpression(this.expressionModel).then(response => {
-          this.expressionModel = {};
-          alert("Expression " + this.expressionModel.expression + " has been updated");
-          this.findExpressionsByDictionaryId();
-        });
+        this.updateExpression(this.expressionModel);
+        this.isEditing = false;
       }
+    },
+
+    updateExpression(expressionToUpdate) {
+      Service.updateExpression(expressionToUpdate).then(response => {
+        this.cleanFields();
+        this.showAlert(
+          "Expression " + expressionToUpdate.expression + " has been updated"
+        );
+        this.findExpressionsByDictionaryId();
+      });
     },
 
     removeExpression(expressionToRemove) {
       if (confirm("Would you like to delete this expression?")) {
         Service.removeExpression(expressionToRemove.id).then(response => {
-           alert(response.data);
-            this.findExpressionsByDictionaryId();
-        })
+          this.validateRemoveExpressionResponse(response);
+          this.findExpressionsByDictionaryId();
+        });
+      }
+    },
+
+    validateRemoveExpressionResponse(response) {
+      if (response.data === true) {
+        this.showAlert("The expression has been removed");
+      } else {
+        this.showAlert("Please, try again later");
       }
     },
 
@@ -166,10 +220,17 @@ export default {
       this.expressionModel.hits = expressionToEdit.hits;
       this.expressionModel.fails = expressionToEdit.fails;
       this.isEditing = true;
+    },
+
+    cleanFields() {
+      this.expressionModel.id = "";
+      this.expressionModel.expression = "";
+      this.expressionModel.meaning = "";
+    },
+
+    showAlert(msg) {
+      alert(msg);
     }
   }
 };
 </script>
-
-<style>
-</style>

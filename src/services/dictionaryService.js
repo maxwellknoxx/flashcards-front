@@ -3,7 +3,7 @@ import { http } from './config'
 export default {
 
     findByDictionaryName: (dictionaryToFind) => {
-        return http.get('v1/dictionary/findByDictionaryName', dictionaryToFind)
+        return http.get('v1/dictionary/dictionariesByName', dictionaryToFind)
     }, 
 
     addDictionary: (dictionaryToAdd) => {
@@ -26,7 +26,7 @@ export default {
         return http.get('v1/dictionary/dictionaries/' + id)
     },
 
-    findAllDictionaryByUserId: (id) => {
+    findDictionariesByUserId: (id) => {
         return http.get('v1/dictionary/dictionariesByUserId/' + id)
     }
     

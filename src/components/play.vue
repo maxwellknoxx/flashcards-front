@@ -2,7 +2,11 @@
   <div id="app">
     <nav>
       <div class="nav-wrapper blue darken-1">
-        <a href="#" class="brand-logo center">Playing {{ this.dictionaryModel.dictionaryName }}</a>
+       
+       <router-link :to=" '/expressions/ ' + this.$route.params.data "> 
+        <a href="#" class="brand-logo center">Back to {{ this.dictionaryModel.dictionaryName }} expressions </a>
+        </router-link>
+       
       </div>
     </nav>
 
@@ -26,6 +30,11 @@
       </slide>
       <hooper-navigation slot="hooper-addons"></hooper-navigation>
     </hooper>
+    <nav>
+      <div class="nav-wrapper blue darken-1">
+        <a href="#" class="brand-logo center">You are practicing {{ this.dictionaryModel.dictionaryName }}</a>
+      </div>
+    </nav>
   </div>
 </template>
 
@@ -80,31 +89,62 @@ export default {
 
   methods: {
     checkLogin() {
-      UserService.isLogged(localStorage.getItem("id"))
-        .then(response => {
-          if (response.data.status) {
-            this.$store.dispatch("login");
-            this.$store.dispatch("setId", localStorage.getItem("id"));
-          }
-        })
-        .catch(e => {
-          localStorage.removeItem("id");
-          localStorage.removeItem("dictionaryId");
-          this.$router.push("/login");
-        });
+      if (this.checkLocalStorage() === true) {
+        UserService.isLogged(localStorage.getItem("id"))
+          .then(response => {
+            this.validateCheckedLogin(response);
+          })
+          .catch(e => {
+            this.removeLocalStorage();
+          });
+      }
+    },
+
+    validateCheckedLogin(response) {
+      if (response.data === true) {
+        this.setLocalStorage();
+      } else {
+        this.removeLocalStorage();
+      }
+    },
+
+    setLocalStorage() {
+      this.$store.dispatch("login");
+      this.$store.dispatch("setId", this.getLocalStorageId());
+    },
+
+    removeLocalStorage() {
+      localStorage.removeItem("id");
+      localStorage.removeItem("dictionaryId");
+      this.$router.push("/login");
+    },
+
+    checkLocalStorage() {
+      if (this.getLocalStorageId()) {
+        return true;
+      }
+      return false;
+    },
+
+    getLocalStorageId() {
+      return localStorage.getItem("id");
     },
 
     findExpressionsByDictionaryId() {
       ExpressionService.findExpressionsByDictionaryId(this.idDictionary).then(
         response => {
-          this.expressions = response.data;
+          if (response.data !== false) {
+            this.expressions = response.data;
+          }
         }
       );
     },
 
     findDictionaryById() {
       DictionaryService.findDictionaryById(this.idDictionary).then(response => {
-        this.dictionaryModel = response.data;
+        if (response.data !== false) {
+          this.dictionaryModel = response.data;
+        }
       });
     },
 

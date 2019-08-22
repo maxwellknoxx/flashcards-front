@@ -50,21 +50,29 @@ export default {
   methods: {
     login() {
       UserService.login(this.user).then(response => {
-        if (response.data.isLogged) {
-          this.idUser = response.data.id;
-          this.$store.dispatch("login");
-          this.$store.dispatch("setId", this.idUser);
-          localStorage.setItem("id", this.idUser);
-          this.$router.push("/dictionaries/" + this.idUser);
-        } else {
-          this.message = response.data;
-          this.user = "";
-        }
+        this.validateLogin(response);
       });
+    },
+
+    validateLogin(response) {
+      if (response.data.isLogged === true) {
+        this.idUser = response.data.id;
+        this.$store.dispatch("login");
+        this.$store.dispatch("setId", this.idUser);
+        localStorage.setItem("id", this.idUser);
+        this.$router.push("/dictionaries/" + this.idUser);
+      } else {
+        this.showMessage("Please, verify your information");
+        this.user = "";
+      }
     },
 
     cleanMessage() {
       this.message = "";
+    },
+
+    showMessage(msg) {
+      this.message = msg;
     }
   }
 };

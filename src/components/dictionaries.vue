@@ -88,76 +88,134 @@ export default {
   },
 
   mounted() {
-    this.findAllDictionaryByUserId(localStorage.getItem("id"));
+    this.findDictionariesByUserId(localStorage.getItem("id"));
   },
 
   methods: {
     checkLogin() {
-      UserService.isLogged(localStorage.getItem("id"))
-        .then(response => {
-          if (response.data) {
-            this.$store.dispatch("login");
-            this.$store.dispatch("setId", localStorage.getItem("id"));
-          }
-        })
-        .catch(e => {
-          localStorage.removeItem("id");
-          localStorage.removeItem("dictionaryId");
-          this.$router.push("/login");
-        });
+      if (this.checkLocalStorage() === true) {
+        UserService.isLogged(localStorage.getItem("id"))
+          .then(response => {
+            this.validateCheckedLogin(response);
+          })
+          .catch(e => {
+            this.removeLocalStorage();
+          });
+      }
     },
 
-    findAllDictionaryByUserId() {
-      Service.findAllDictionaryByUserId(localStorage.getItem("id")).then(
+    validateCheckedLogin(response) {
+      if (response.data === true) {
+        this.setLocalStorage();
+      } else {
+        this.removeLocalStorage();
+      }
+    },
+
+    setLocalStorage() {
+      this.$store.dispatch("login");
+      this.$store.dispatch("setId", this.getLocalStorageId());
+    },
+
+    removeLocalStorage() {
+      localStorage.removeItem("id");
+      localStorage.removeItem("dictionaryId");
+      this.$router.push("/login");
+    },
+
+    checkLocalStorage() {
+      if (this.getLocalStorageId()) {
+        return true;
+      }
+      return false;
+    },
+
+    getLocalStorageId() {
+      return localStorage.getItem("id");
+    },
+
+    findDictionariesByUserId() {
+      Service.findDictionariesByUserId(this.getLocalStorageId()).then(
         response => {
-          this.dictionaries = response.data;
+          if (response.data !== false) {
+            this.dictionaries = response.data;
+          }
         }
       );
     },
 
     addDictionary() {
-      if (!this.isEditing) {
+     if (!this.isEditing) {
+        this.dictionaryEntity.user.id = this.getLocalStorageId();
         Service.addDictionary(this.dictionaryEntity).then(response => {
-          this.dictionaryEntity = {};
-          alert("Dictionary " + response.data.dictionaryName + " has been added");
-          this.findAllDictionaryByUserId();
+          this.dictionaryEntity.dictionaryName = "";
+          this.showAlert(
+            "Dictionary " + response.data.dictionaryName + " has been added"
+          );
+          this.findDictionariesByUserId();
         });
       } else {
-        this.dictionaryModel.id = this.dictionaryEntity.id;
-        this.dictionaryModel.dictionaryName = this.dictionaryEntity.dictionaryName;
-        this.updateDictionary(this.dictionaryModel);
+        this.updateDictionary(this.dictionaryEntity);
       }
     },
 
     removeDictionary(DictionaryToRemove) {
       if (confirm("Would you like to delete this Dictionary?")) {
         Service.removeDictionary(DictionaryToRemove.id).then(response => {
-          alert(response.data);
-          this.findAllDictionaryByUserId();
+          this.validateRemoveDictionaryResponse(response);
+          this.findDictionariesByUserId();
         });
       }
     },
 
+    validateRemoveDictionaryResponse(response) {
+      if (response.data === true) {
+        this.showAlert("The dictionary has been removed");
+      } else {
+        this.showAlert("Please, try again later");
+      }
+    },
+
     editDictionary(DictionaryToEdit) {
-      this.dictionaryEntity = DictionaryToEdit;
+      this.parseDictionaryEntity(DictionaryToEdit);
       this.isEditing = true;
     },
 
-    updateDictionary(dictionaryModel) {
-      Service.updateDictionary(dictionaryModel).then(response => {
-        if (response.data) {
-          this.isEditing = false;
-          this.dictionaryEntity = {};
-          alert("Dictionary has been updated!");
-          this.findAllDictionaryByUserId();
-        } else {
-          alert("Please, try it again");
-        }
+    parseDictionaryEntity(dictionaryModel) {
+      this.dictionaryEntity.id = dictionaryModel.id;
+      this.dictionaryEntity.dictionaryName = dictionaryModel.dictionaryName;
+      this.dictionaryEntity.failWords = dictionaryModel.failWords;
+      this.dictionaryEntity.hitWords = dictionaryModel.hitWords;
+      this.dictionaryEntity.user.id = dictionaryModel.idUser;
+    },
+
+    updateDictionary(dictionaryEntity) {
+      Service.updateDictionary(dictionaryEntity).then(response => {
+        this.validateUpdateDictionaryResponse(response);
       });
+    },
+
+    validateUpdateDictionaryResponse(response) {
+      if (response.data) {
+        this.isEditing = false;
+        this.cleanField();
+        this.showAlert("Dictionary has been updated!");
+        this.findDictionariesByUserId();
+      } else {
+        this.showAlert("Please, try it again later");
+      }
+    },
+
+    cleanField() {
+      this.dictionaryEntity.id = "";
+      this.dictionaryEntity.dictionaryName = "";
+      this.dictionaryEntity.failWords = "";
+      this.dictionaryEntity.hitWords = "";
+    },
+
+    showAlert(msg) {
+      alert(msg);
     }
   }
 };
 </script>
-
-<style>
-</style>

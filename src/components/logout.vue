@@ -4,7 +4,6 @@
   </div>
 </template>
 
-
 <script>
 import UserService from "../services/userService";
 
@@ -15,16 +14,16 @@ export default {
 
   methods: {
     logout() {
-      UserService.logout(localStorage.getItem('id'));
-      this.$store.dispatch("logout");
-      this.$store.dispatch("setId", "");
-      localStorage.removeItem('id');
-      localStorage.removeItem('dictionaryId');
-      this.$router.push('/');
+      UserService.logout(localStorage.getItem("id")).then(response => {
+        if (response.data === true) {
+          this.$store.dispatch("logout");
+          this.$store.dispatch("setId", "");
+          localStorage.removeItem("id");
+          localStorage.removeItem("dictionaryId");
+          this.$router.push("/");
+        }
+      });
     }
   }
 };
 </script>
-
-<style>
-</style>

@@ -3,7 +3,7 @@ import { http } from './config'
 export default {
 
     findExpressionsByDictionaryId: (id) => {
-        return http.get('v1/expression/findExpressionsByDictionaryId/' + id)
+        return http.get('v1/expression/expressionsByDictionaryId/' + id)
     },
 
     addExpression: (expressionToAdd) => {
