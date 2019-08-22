@@ -2,11 +2,9 @@
   <div id="app">
     <nav>
       <div class="nav-wrapper blue darken-1">
-       
        <router-link :to=" '/expressions/ ' + this.$route.params.data "> 
         <a href="#" class="brand-logo center">Back to {{ this.dictionaryModel.dictionaryName }} expressions </a>
         </router-link>
-       
       </div>
     </nav>
 
@@ -148,10 +146,6 @@ export default {
       });
     },
 
-    setExpressions() {
-      this.expressions = this.currentExpressions;
-    },
-
     markExpressionAsHit(expressionToHit) {
       this.prepareExpression(expressionToHit);
       Service.markExpressionAsHit(this.expressionModel).then(response => {
@@ -183,7 +177,7 @@ export default {
 <style>
 .VueCarousel-slide {
   position: relative;
-  background: #42b983;
+  background: white;
   color: #fff;
   font-family: Arial;
   font-size: 24px;
