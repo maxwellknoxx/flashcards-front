@@ -11,6 +11,7 @@ import recoverInformation from './components/recoverInformation'
 import dictionaries from './components/dictionaries'
 import expressions from './components/expressions'
 import play from './components/play'
+import practise from './components/practise'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
@@ -27,6 +28,7 @@ const routes = [
    { path: '/dictionaries/:data', component: dictionaries },
    { path: '/expressions/:data', component: expressions },
    { path: '/play/:data', component: play },
+   { path: '/practise', component: practise },
    { path: '/', component:  home},
    { path: '/home', component:  home}
 
